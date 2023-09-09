@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectItem,
 } from "./components/ui/select";
+
 function App() {
   class Book {
     name: string;
@@ -72,9 +73,10 @@ function App() {
         </nav>
       </header>
       <main>
-        <div className="flex flex-col items-center gap-6">
-          <div className="flex gap-6 items-center">
+        <div className="flex flex-col items-center gap-3 flex-wrap">
+          <div className="sm:flex gap-3">
             <Input
+              className=""
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -96,7 +98,7 @@ function App() {
               defaultValue="Read"
               onValueChange={(value) => setRead(value)}
             >
-              <SelectTrigger className="w-[1000px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Read?" />
               </SelectTrigger>
               <SelectContent>
