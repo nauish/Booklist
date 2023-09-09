@@ -11,8 +11,13 @@ import {
   TableCell,
 } from "./components/ui/table";
 import { Input } from "./components/ui/input";
-import { Checkbox } from "./components/ui/checkbox";
-import { Label } from "./components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectValue,
+  SelectTrigger,
+  SelectItem,
+} from "./components/ui/select";
 function App() {
   class Book {
     name: string;
@@ -87,15 +92,21 @@ function App() {
               onChange={(e) => setPages(Number(e.target.value))}
               placeholder="Pages"
             ></Input>
-            <div className="flex-shrink-0">
-              <Checkbox
-                value={read}
-                onChange={(e) => setRead(e.target.value)}
-                id="read"
-                className="mr-1"
-              ></Checkbox>
-              <Label htmlFor="read">I have read the book</Label>
-            </div>
+            <Select
+              defaultValue="Read"
+              onValueChange={(value) => setRead(value)}
+            >
+              <SelectTrigger className="w-[1000px]">
+                <SelectValue placeholder="Read?" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Read" disabled>
+                  Read?
+                </SelectItem>
+                <SelectItem value="Have read">I have read the book</SelectItem>
+                <SelectItem value="Haven't">I haven't read the book</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Button
             onClick={() => addBookToLibrary(title, author, pages, read)}
@@ -109,11 +120,11 @@ function App() {
             <TableCaption>A list of books in the library.</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Author</TableHead>
-                <TableHead>Pages</TableHead>
-                <TableHead>Read?</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="text-center">Title</TableHead>
+                <TableHead className="text-center">Author</TableHead>
+                <TableHead className="text-center">Pages</TableHead>
+                <TableHead className="text-center">Read?</TableHead>
+                <TableHead className="text-center">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
