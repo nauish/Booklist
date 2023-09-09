@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import {
@@ -14,7 +14,50 @@ import { Input } from "./components/ui/input";
 import { Checkbox } from "./components/ui/checkbox";
 import { Label } from "./components/ui/label";
 function App() {
-  // const [count, setCount] = useState(0);
+  class Book {
+    name: string;
+    author: string;
+    pages: number;
+    status: string;
+
+    constructor(name: string, author: string, pages: number, status: string) {
+      this.name = name;
+      this.author = author;
+      this.pages = pages;
+      this.status = status;
+    }
+  }
+
+  const [myLibrary, setMyLibrary] = useState<Book[]>([]);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [pages, setPages] = useState<number>(0);
+  const [read, setRead] = useState("");
+
+  useEffect(() => {
+    // Load the library from local storage on component mount
+    const storedLibrary = JSON.parse(localStorage.getItem("myLibrary") || "[]");
+    setMyLibrary(storedLibrary);
+  }, []);
+
+  // Extract book adding logic into a separate function
+  function addBookToLibrary(
+    name: string,
+    author: string,
+    pages: number,
+    status: string
+  ) {
+    const newBook = new Book(name, author, pages, status);
+    setMyLibrary([...myLibrary, newBook]);
+    localStorage.setItem("myLibrary", JSON.stringify([...myLibrary, newBook]));
+  }
+
+  function deleteBookFromLibrary(index: number) {
+    const updatedLibrary = [...myLibrary];
+    updatedLibrary.splice(index, 1);
+    setMyLibrary(updatedLibrary);
+    localStorage.setItem("myLibrary", JSON.stringify(updatedLibrary));
+  }
 
   return (
     <>
@@ -26,15 +69,40 @@ function App() {
       <main>
         <div className="flex flex-col items-center gap-6">
           <div className="flex gap-6 items-center">
-            <Input type="text" placeholder="Book Title"></Input>
-            <Input type="text" placeholder="Author"></Input>
-            <Input type="number" placeholder="Pages"></Input>
+            <Input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Book Title"
+            ></Input>
+            <Input
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              type="text"
+              placeholder="Author"
+            ></Input>
+            <Input
+              type="number"
+              value={pages}
+              onChange={(e) => setPages(Number(e.target.value))}
+              placeholder="Pages"
+            ></Input>
             <div className="flex-shrink-0">
-              <Checkbox id="read" className="mr-1"></Checkbox>
+              <Checkbox
+                value={read}
+                onChange={(e) => setRead(e.target.value)}
+                id="read"
+                className="mr-1"
+              ></Checkbox>
               <Label htmlFor="read">I have read the book</Label>
             </div>
           </div>
-          <Button className="bg-blue-700">Add to Library</Button>
+          <Button
+            onClick={() => addBookToLibrary(title, author, pages, read)}
+            className="bg-blue-700"
+          >
+            Add to Library
+          </Button>
         </div>
         <div>
           <Table>
@@ -44,18 +112,27 @@ function App() {
                 <TableHead>Title</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Pages</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Read?</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">
-                  To Kill a Mockingbird
-                </TableCell>
-                <TableCell>Harper Lee</TableCell>
-                <TableCell>281</TableCell>
-                <TableCell>Yes</TableCell>
-              </TableRow>
+              {myLibrary.map((book, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">{book.name}</TableCell>
+                  <TableCell>{book.author}</TableCell>
+                  <TableCell>{book.pages}</TableCell>
+                  <TableCell>{book.status}</TableCell>
+                  <TableCell>
+                    <Button
+                      className="bg-red-500"
+                      onClick={() => deleteBookFromLibrary(index)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
